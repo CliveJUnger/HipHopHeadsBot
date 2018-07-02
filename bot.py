@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import tweepy, praw, config, pprint,time
+import tweepy, praw, config, pprint, time, logging
 
 auth = tweepy.OAuthHandler(config.api_key, config.api_secret)
 auth.set_access_token(config.access_token, config.token_secret)
@@ -13,15 +13,43 @@ reddit = praw.Reddit(client_id = config.client_id,
 
 hiphopheads = reddit.subreddit('hiphopheads')
 
-print("---Hip Hop Heads Twitter Bot---")
+logging.basicConfig(filename='out.log', level=logging.INFO)
 
-posted = []
-while True: 
-	for submission in hiphopheads.new():
-		if(submission.score > 20 and submission.id not in posted):
-                        if(submission.author == 'AutoModerator'): continue
-			print submission.score, submission.title 
-			post = submission.title + " " + submission.url
-			api.update_status(post)
-			posted.append(submission.id)
-	time.sleep(300)
+def main():
+    print("---Hip Hop Heads Twitter Bot---")
+    while True:
+        query_reddit()
+        time.sleep(300)
+
+def get_last_tweets():
+    tweets = ""
+    for status in api.user_timeline(tweet_mode='extended'):
+        tweets = tweets + " " + status.full_text
+    return tweets
+
+def query_reddit(): 
+    try:
+        last_20_tweets = get_last_tweets();
+        
+        for submission in hiphopheads.new():
+                if(((submission.score > 20 and "FRESH" in submission.title)
+                    or (submission.score > 50)
+                    or ("FRESH ALBUM" in submission.title))
+                    and submission.author != 'AutoModerator'
+                    and submission.title not in last_20_tweets
+                    and "DISCUSSION" not in submission.title):
+
+                        title = (submission.title).encode('ascii', 'ignore').decode('ascii')
+                        log = str(submission.score) + " " + title
+                        print log
+                        logging.info(log)
+
+                        post = submission.title + " " + submission.url
+                        api.update_status(post) 
+    except Exception as e:
+        print e
+        logging.warning(e)
+
+
+if __name__ == '__main__':
+    main()
