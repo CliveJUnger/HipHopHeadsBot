@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import tweepy, praw, config, pprint, time, logging
+import tweepy, praw, config, pprint, time, logging, HTMLParser
 
 auth = tweepy.OAuthHandler(config.api_key, config.api_secret)
 auth.set_access_token(config.access_token, config.token_secret)
@@ -22,9 +22,11 @@ def main():
         time.sleep(300)
 
 def get_last_tweets():
-    tweets = ""
+    tweets = []
+    h = HTMLParser.HTMLParser()
     for status in api.user_timeline(tweet_mode='extended'):
-        tweets = tweets + " " + status.full_text
+        text = h.unescape(status.full_text).rsplit(' ', 1)[0]
+        tweets.append(text)
     return tweets
 
 def query_reddit(): 
@@ -48,7 +50,9 @@ def query_reddit():
                         api.update_status(post) 
     except Exception as e:
         print e
+        print last_20_tweets
         logging.warning(e)
+        logging.warning(last_20_tweets)
 
 
 if __name__ == '__main__':
