@@ -8,6 +8,11 @@ Follow the bot [@HipHopHeadNews](https://twitter.com/HipHopHeadNews)
   * 50+ Upvotes
   * Tagged [FRESH ALBUM]
   * No Discussion Threads or Moderator Posts
+  
+## Built With
+
+* [Tweepy](http://www.tweepy.org/) - Python library for accessing Twitter API
+* [PRAW](https://praw.readthedocs.io/en/latest/) - The Python Reddit API Wrapper
 
 
 ## Installation
