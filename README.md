@@ -22,3 +22,6 @@ Follow the bot [@HipHopHeadNews](https://twitter.com/HipHopHeadNews)
 
 Add API keys to config.py
 
+## License
+
+Copyright (c) 2018, Clive Unger. MIT License
