@@ -15,6 +15,9 @@ reddit = praw.Reddit(client_id = config.client_id,
 
 hiphopheads = reddit.subreddit('hiphopheads')
 
+#logger = logging.getLogger('tweets')
+#logger.setLevel(logging.INFO)
+
 def main():
     print("---Hip Hop Heads Twitter Bot---")
     while True:
