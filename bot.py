@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import tweepy, praw, config, pprint, time, logging, HTMLParser
+import logging
+logging.basicConfig(filename='tweets.log', level=logging.INFO, format='%(asctime)s %(levelname)s : %(message)s')
+import tweepy, praw, config, pprint, time, HTMLParser
 
 auth = tweepy.OAuthHandler(config.api_key, config.api_secret)
 auth.set_access_token(config.access_token, config.token_secret)
@@ -12,8 +14,6 @@ reddit = praw.Reddit(client_id = config.client_id,
 		user_agent = config.user_agent)
 
 hiphopheads = reddit.subreddit('hiphopheads')
-
-logging.basicConfig(filename='out.log', level=logging.INFO)
 
 def main():
     print("---Hip Hop Heads Twitter Bot---")
@@ -32,6 +32,7 @@ def get_last_tweets():
 def query_reddit(): 
     try:
         last_20_tweets = get_last_tweets();
+        h = HTMLParser.HTMLParser()
         
         for submission in hiphopheads.new():
                 if(((submission.score > 20 and "FRESH" in submission.title)
@@ -41,19 +42,18 @@ def query_reddit():
                     and submission.title not in last_20_tweets
                     and "DISCUSSION" not in submission.title):
 
-                        title = (submission.title).encode('ascii', 'ignore').decode('ascii')
-                        log = str(submission.score) + " " + title
+                        title = h.unescape(submission.title)
+                        dif = (time.time() - submission.created_utc)/3600
+                        log = str(submission.score) + " " + title + " " + str(dif)
                         print log
                         logging.info(log)
 
                         post = submission.title + " " + submission.url
-                        api.update_status(post) 
+                        api.update_status(post)
     except Exception as e:
         print e
-        print last_20_tweets
         logging.warning(e)
-        logging.warning(last_20_tweets)
-
+        print last_20_tweets
 
 if __name__ == '__main__':
     main()
